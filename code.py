@@ -22,7 +22,7 @@ data = data.drop(["sentiment"],axis=1)
 
 data = data.append({"review":test_data[0]},ignore_index=True)
 
-data["review"] = [sentance.replace("<br />","") for sentance in test_data[0]]
+data["review"] = [sentance.replace("<br />","") for sentance in data["review"]]
 data["review"] = [sentance.lower() for sentance in data["review"]]
 data["review"] = [re.sub(r'[^\w\s]','',i) for i in data["review"]]
 
@@ -32,8 +32,6 @@ print("removing stop words...")
 stop_word = set(stopwords.words("english"))
 
 data['review'] = data["review"].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop_word)]))
-
-data = data.drop([0],axis=1)
 
 
 
@@ -80,8 +78,8 @@ print("building model...")
 #680
 model = Sequential([
 	Embedding(input_dim=5000,output_dim=60,input_length=925),
-	LSTM(256),
-	Dropout(0.1)
+	LSTM(256,return_sequences=True),
+	Dropout(0.1),
 	LSTM(256),
 	Dense(100),
 	Dense(1,activation="softmax"),
